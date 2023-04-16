@@ -2,8 +2,15 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+
 const Product = require('./models/Product');
 const productRouter = require('./routers/productRoter');
+const User = require('./models/User');
+const userRouter = require('./routers/userRouter');
+const Category = require('./models/Category');
+const categoryRouter = require('./routers/categoryRouter');
+const Order = require('./models/Order');
+const orderRouter = require('./routers/orderRouter');
 
 const app = express();
 
