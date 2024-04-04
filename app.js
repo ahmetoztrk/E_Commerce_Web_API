@@ -1,13 +1,30 @@
-const express = require('express')
+const express = require('express');
 
-const app = express()
+require('dotenv/config');
 
-app.get('/' , (req,res) => {
-    res.send('HELLO !')
-})
+const app = express();
 
-const PORT = 3000
+//MIDDLEWARE
+app.use(express.json());
 
-app.listen(PORT, () => {
-    console.log(`Server is running http:localhost:${PORT}`)
-})
+const api = process.env.API_URL;
+
+app.get(`${api}/products`, (req, res) => {
+  const product = {
+    id: '1',
+    name: 'table',
+    image: 'some_url',
+  };
+  console.log(product);
+  res.send(product);
+});
+
+app.post(`${api}/products`, (req, res) => {
+  const newProduct = req.body;
+  console.log(newProduct);
+  res.send(newProduct);
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running http:localhost:${process.env.PORT}/`);
+});
