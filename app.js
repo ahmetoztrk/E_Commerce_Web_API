@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
 require('dotenv/config');
 
 const app = express();
@@ -10,17 +10,23 @@ const app = express();
 app.use(express.json());
 app.use(morgan('tiny'));
 
-const productSchema = mongoose.Schema({
-  name: String,
-  image: String,
-  countInStock: {
-    type: Number,
-    required: true,
-  },
-});
+app.use(cors());
+app.options('*', cors());
 
-const Product = mongoose.model('Product', productSchema);
+//Routes
+const productsRoutes = require('./routes/products');
+const usersRoutes = require('./routes/users');
+const ordersRoutes = require('./routes/orders');
+const categoriesRoutes = require('./routes/categories');
 
+const api = process.env.API_URL;
+
+app.use(`${api}/products`, productsRoutes);
+app.use(`${api}/users`, usersRoutes);
+app.use(`${api}/orders`, ordersRoutes);
+app.use(`${api}/categories`, categoriesRoutes);
+
+//DB
 mongoose
   .connect(process.env.CONNECTION_STRING)
   .then(() => {
@@ -30,32 +36,7 @@ mongoose
     console.log(err);
   });
 
-const api = process.env.API_URL;
-
-app.get(`${api}/products`, async (req, res) => {
-  const productList = await Product.find()
-  res.send(productList);
-});
-
-app.post(`${api}/products`, (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    image: req.body.image,
-    countInStock: req.body.countInStock,
-  });
-  product
-    .save()
-    .then((createdProduct) => {
-      res.status(201).json(createdProduct);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-        success: false
-      });
-    });
-});
-
+//Server
 app.listen(process.env.PORT, () => {
   console.log(`Server is running http:localhost:${process.env.PORT}`);
 });
