@@ -15,17 +15,18 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id' ,async (req,res) => {
+router.get('/:id', async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
-    if(!category)
-      return res.status(500).json({message : "The category with the given ID was not found!!"})
-    res.status(200).send(category)
-  }catch(error) {
-    res.status(500).json({success: false, error : error.message})
+    if (!category)
+      return res
+        .status(500)
+        .json({ message: 'The category with the given ID was not found!!' });
+    res.status(200).send(category);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
-  
-})
+});
 
 router.post('/', async (req, res) => {
   try {
@@ -36,9 +37,26 @@ router.post('/', async (req, res) => {
     });
     const savedCategory = await newCategory.save();
     res.status(201).json(savedCategory);
-    console.log("Category has been created : ", savedCategory);
+    console.log('Category has been created : ', savedCategory);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+        icon: req.body.icon,
+        color: req.body.color,
+      },
+      { new: true }
+    );
+    res.status(200).send(category);
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
